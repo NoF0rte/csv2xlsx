@@ -1,6 +1,8 @@
 package csv2xlsx
 
 import (
+	"fmt"
+
 	"github.com/xuri/excelize/v2"
 )
 
@@ -46,7 +48,9 @@ func ToXLSX(rows [][]string, hasHeader bool, output string) error {
 			return err
 		}
 
-		err = f.AddTable(sheet, "A1", endCoord, ``)
+		err = f.AddTable(sheet, &excelize.Table{
+			Range: fmt.Sprintf("A1:%s", endCoord),
+		})
 		if err != nil {
 			return err
 		}
