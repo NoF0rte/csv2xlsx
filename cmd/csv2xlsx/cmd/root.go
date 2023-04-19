@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/NoF0rte/csv2xlsx"
 	"github.com/spf13/cobra"
-	"github.com/xuri/excelize/v2"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -26,60 +26,15 @@ var rootCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		sheet := "Sheet1"
-		f := excelize.NewFile()
-
-		var headerStyleId int
-		if hasHeader {
-			headerStyleId, err = f.NewStyle(&excelize.Style{
-				Font: &excelize.Font{
-					Bold: true,
-					Size: 12,
-				},
-			})
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-
-		for i, row := range rows {
-			for j, col := range row {
-				coordinates, err := excelize.CoordinatesToCellName(j+1, i+1)
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				f.SetCellValue(sheet, coordinates, col)
-
-				if i == 0 && hasHeader {
-					err = f.SetCellStyle(sheet, coordinates, coordinates, headerStyleId)
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-			}
-		}
-
-		if hasHeader {
-			endCoord, err := excelize.CoordinatesToCellName(len(rows[0]), len(rows))
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			err = f.AddTable(sheet, "A1", endCoord, ``)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-
 		if output == "" {
 			filename := filepath.Base(csvFile)
 			fileWithoutExt := strings.TrimSuffix(filename, filepath.Ext(filename))
 			output = fmt.Sprintf("%s.xlsx", fileWithoutExt)
 		}
 
-		if err := f.SaveAs(output); err != nil {
-			fmt.Println(err)
+		err = csv2xlsx.ToXLSX(rows, hasHeader, output)
+		if err != nil {
+			fmt.Printf("[!] Error: %v", err)
 		}
 	},
 }

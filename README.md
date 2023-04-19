@@ -4,7 +4,7 @@ A simple tool that converts CSV files to XLSX.
 ## Install
 
 ```sh
-go install github.com/NoF0rte/csv2xlsx@latest
+go install github.com/NoF0rte/csv2xlsx/cmd/csv2xlsx@latest
 ```
 
 ## Usage
